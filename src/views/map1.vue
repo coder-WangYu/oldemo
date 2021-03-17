@@ -16,6 +16,12 @@
 
     <!-- 地图位置选择框 -->
     <position-select @changePosition="changePosition"></position-select>
+
+		<!-- 地图叠加层 -->
+		<div id="overlay">
+			<button id="clone">克隆</button>
+			<button id="delete">删除</button>
+		</div>
   </div>
 </template>
 
@@ -106,6 +112,23 @@ export default {
         [195678, 3248267],
       ],
     ]);
+
+    // 添加自定义样式的点要素
+    map.addCustomizePoint([
+      [146759,3297187],
+      [26759,497187],
+      [126759,297187],
+      [166759,1297187]
+    ])
+
+		// 添加自定义样式的圆形要素
+    map.addCustomizeCircle([126759,9297187])
+
+		// 添加叠加层
+		map.addMyOverlay()
+
+		// 使用群集策略
+		map.useClusterStrategy()
   },
   methods: {
     // 放大
@@ -149,6 +172,9 @@ export default {
 .map1 {
   width: 100%;
   height: 100%;
+
+  background: url("../assets/flag.jpeg") repeat;
+  background-size: 240px;
 }
 
 #map1 {
