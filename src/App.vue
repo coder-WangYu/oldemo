@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import map1 from "@/views/map1";
+import map1 from "@/views/map";
 
 export default {
   name: "App",

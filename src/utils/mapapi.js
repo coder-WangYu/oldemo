@@ -5,9 +5,14 @@ import {upAndDown} from "ol/easing";
 import {Circle, LineString, Point, Polygon} from "ol/geom";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
-import {Icon, Fill, Stroke, Style, Text} from "ol/style";
+import {Fill, Stroke, Style, Text} from "ol/style";
+import Icon from "ol/style/Icon";
+import CircleStyle from "ol/style/Circle";
 import {Select} from "ol/interaction";
 import {click} from "ol/events/condition";
+import {Cluster} from "ol/source";
+import {Heatmap} from "ol/layer";
+import GeoJSON from "ol/format/GeoJSON";
 
 class Mymap extends OLMap {
 	// 放大
@@ -209,17 +214,17 @@ class Mymap extends OLMap {
 		let pointFeatures = []
 		let featureStyle = new Style({
 			text: new Text({
-				text: "123123",
+				text: "嘻",
 				stroke: new Stroke({
-					color: "blue",
+					color: "white",
 					width: 2,
 				})
 			}),
 			image: new Icon({
-				src: "../../src/assets/mapIcon/red.svg",
+				src: require("../../src/assets/mapIcon/red.svg"),
+				scale: [1.3, 1.3],
 			}),
 		})
-		console.log(featureStyle)
 
 		if (points.length) {
 			points.forEach(ele => {
@@ -331,7 +336,70 @@ class Mymap extends OLMap {
 
 	// 群集策略
 	useClusterStrategy() {
+		const getRandomInt = function(min, max) {
+			return Math.floor(Math.random() * (max - min + 1)) + min;
+		};
+		let features = [];
+		let numberOfFeatures = 0;
 
+		while(numberOfFeatures < 1000) {
+			let point = new Point([
+				getRandomInt(6545862, 9568284),
+				getRandomInt(6102732, 7154505),
+			]);
+			features.push(new Feature(point));
+			numberOfFeatures++;
+		}
+
+		let getStyle = (feature) => {
+			let length = feature.get("features").length
+
+			return [
+				new Style({
+					image: new CircleStyle({
+						radius: Math.min(
+							Math.max(length * 1.2, 15), 20
+						),
+						fill: new Fill({
+							color: [0, 204, 0, 0.6],
+						}),
+					}),
+					text: new Text({
+						text: length.toString(),
+						fill: new Fill({
+							color: "white",
+						}),
+						stroke: new Stroke({
+							color: [0, 51, 0, 1],
+							width: 1,
+						})
+					})
+				})
+			]
+		}
+
+		let vectorLayer = new VectorLayer({
+			source: new Cluster({
+				distance: 25,
+				source: new VectorSource({
+					features: features,
+				})
+			}),
+			style: getStyle
+		})
+
+		this.addLayer(vectorLayer)
+	}
+
+	createHeatmap() {
+		this.addLayer(new Heatmap({
+			source: new VectorSource({
+				url: '../geojsonFiles/users-online.json',
+				format: new GeoJSON({
+					dataProjection: "EPSG:3857",
+				})
+			})
+		}));
 	}
 }
 

@@ -129,6 +129,9 @@ export default {
 
 		// 使用群集策略
 		map.useClusterStrategy()
+
+		// 创建热图
+		map.createHeatmap()
   },
   methods: {
     // 放大
